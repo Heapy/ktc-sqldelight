@@ -31,4 +31,6 @@ jobs:
           chmod +x /tmp/ktc-plugins
           /tmp/ktc-plugins validate
       - name: Test installation and exported runtime libraries
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: scripts/test-install.sh /tmp/ktc-plugins "$GITHUB_SHA" "$GITHUB_REPOSITORY"
