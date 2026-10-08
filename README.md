@@ -6,7 +6,7 @@ Pinned to Kotlin Toolchain **0.13.0**, Kotlin **2.4.20**, SQLDelight **2.3.2** a
 
 ## Install
 
-Use [ktc-plugins 0.2.0 or newer](https://github.com/Heapy/ktc-plugins/releases/tag/v0.2.0)
+Use [ktc-plugins 0.3.0 or newer](https://github.com/Heapy/ktc-plugins/releases/tag/v0.3.0)
 from the consuming project:
 
 ```sh
@@ -43,7 +43,8 @@ Generation participates in the normal build and removes stale outputs when queri
 
 The producer's `gradle/libs.versions.toml` is the single source of the SQLDelight version for both
 compiler dependencies and exported runtime libraries. The installer resolves the plugin's private
-compiler aliases to literal coordinates and exports these consumer aliases:
+compiler aliases to literal coordinates and exports these consumer aliases using one shared
+`[versions]` entry, `ktc-sqldelight-sqldelight`, referenced by each library’s `version.ref`:
 
 | Consumer alias | Library |
 |---|---|
@@ -51,6 +52,9 @@ compiler aliases to literal coordinates and exports these consumer aliases:
 | `$libs.ktc.sqldelight.native.driver` | `app.cash.sqldelight:native-driver` |
 | `$libs.ktc.sqldelight.sqlite.driver` | `app.cash.sqldelight:sqlite-driver` (JVM/JDBC) |
 | `$libs.ktc.sqldelight.coroutines.extensions` | `app.cash.sqldelight:coroutines-extensions` |
+
+The producer descriptor remains `schemaVersion: 1`. Lockfiles with `catalog.versionRefs` require
+ktc-plugins 0.3.0 or newer; upgrade consumer launchers before updating an existing installation.
 
 Exports only add catalog entries. Applications explicitly select module dependencies and platform
 drivers. Use the exported aliases to keep declared versions aligned; separate literal dependencies or
@@ -82,9 +86,11 @@ ktc-plugins validate
 The example uses a custom schema directory and database class, compiles the generated Kotlin, creates
 an actual in-memory SQLite database with the matching JDBC driver, and executes typed queries.
 Generator tests cover invalid SQL diagnostics and removal of stale generated sources. CI runs the
-build and tests on Linux and macOS, and validates packaging using ktc-plugins 0.2.0.
-It also runs `scripts/test-install.sh /path/to/ktc-plugins`: this installs the exact producer commit
-into a fresh consumer and repeats the SQLite test using the exported library aliases.
+build and tests on Linux and macOS, and validates packaging using ktc-plugins 0.3.0.
+It also runs `kotlinr scripts/test-install.main.kts /path/to/ktc-plugins`: this installs the exact producer commit
+into a fresh consumer, checks that all four exports share the producer’s SQLDelight version, preserves
+unrelated catalog entries across offline sync, and repeats the SQLite test using exported aliases.
+The installation script requires JDK 25 and Kotlin 2.4.21+ (`kotlinr` on `PATH`); CI installs both.
 
 Compiler upgrades must update the producer catalog, review the adapted environment against upstream,
 and pass generation/compilation/runtime tests. Kotgent additionally exercises the Native driver.
