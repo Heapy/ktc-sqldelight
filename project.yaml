@@ -1,0 +1,6 @@
+modules:
+  - examples/app
+  - plugins/sqldelight
+
+plugins:
+  - //plugins/sqldelight

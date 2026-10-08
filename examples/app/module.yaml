@@ -1,0 +1,14 @@
+product: jvm/lib
+
+plugins:
+  sqldelight:
+    enabled: true
+    packageName: example.db
+    className: ExampleDatabase
+    sourceDirectory: schema
+
+dependencies:
+  - $libs.runtime
+
+test-dependencies:
+  - $libs.sqlite.driver

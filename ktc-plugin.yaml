@@ -1,0 +1,12 @@
+schemaVersion: 1
+plugins:
+  sqldelight:
+    module: plugins/sqldelight
+    licenseFiles: [LICENSE, NOTICE]
+    catalog:
+      file: gradle/libs.versions.toml
+      export:
+        - runtime
+        - native-driver
+        - sqlite-driver
+        - coroutines-extensions
